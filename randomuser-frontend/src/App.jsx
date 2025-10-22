@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { getUsers } from "./api/randomUsers";
+import { addUserFavorite, getUsers } from "./api/randomUsers";
 import { formatDate } from "./utils/formatters";
+import { toast } from "sonner";
 
 export const App = () => {
   const [users, setUsers] = useState([]);
@@ -12,13 +13,20 @@ export const App = () => {
     console.log(users);
   };
 
+  const addNewFavoriteUser = async( user ) => {
+    const result = await addUserFavorite(user)
+    console.log(result)
+    if(result.success){
+      toast.success(result.msg)
+    }
+  }
+
   useEffect(() => {
     if (counterPagination < 1) {
       setCounterPagination(1);
-    }else{
+    } else {
       getUsersApi();
-    };
-    
+    }
   }, [counterPagination]);
 
   return (
@@ -33,13 +41,18 @@ export const App = () => {
         <div className="grid md:grid-cols-2  gap-4 p-8  ">
           {users.map((user, i) => (
             // CREAMOS EL CARD
+
             <div className=" bg-white shadow-lg rounded-lg p-3 flex  gap-2  ">
-              <img
-                key={i}
-                src={user.picture.large}
-                alt={user.name.first}
-                className="w-15 h-15 rounded-full "
-              />
+              <div className=" flex gap-1 flex-col">
+                <button onClick={() => addNewFavoriteUser(user)} className=" bg-green-400 rounded-lg  text-white text-sm font-thin cursor-pointer"> add </button>
+                <img
+                  key={i}
+                  src={user.picture.large}
+                  alt={user.name.first}
+                  className="w-15 h-15 rounded-full "
+                />
+              </div>
+
               <div className="  w-full py-1 px-2">
                 <div className="flex justify-between">
                   <h4 className="text-xs font-bold "> {user.name.first} </h4>
